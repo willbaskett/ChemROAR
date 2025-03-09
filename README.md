@@ -37,7 +37,6 @@ model = ROAR.ChemROAR.from_pretrained("willbaskett/ChemROAR").to(device)
 ############
 embeddings = model.embed(smiles_strings)
 
-
 X = pd.DataFrame(embeddings).astype(bool)
 y = property.copy()
 
