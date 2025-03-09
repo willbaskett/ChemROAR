@@ -16,6 +16,8 @@ ChemROAR combines an encoder which produces heirarchical discrete embeddings and
 # Usage
 See [the demo notebook](demo.ipynb) for an illustrated version
 ```
+import pandas as pd
+import torch
 import ROAR
 from utils import make_binary_plot
 
