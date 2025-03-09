@@ -24,6 +24,7 @@ smiles_strings = data[<get smiles strings>]
 property = data[<get a known property>]
 
 #load model from huggingface
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = ROAR.ChemROAR.from_pretrained("willbaskett/ChemROAR").to(device)
 
 embed data
