@@ -50,12 +50,12 @@ clusters = make_binary_plot(encodings).sort_values("ci_l", ascending=False)
 #get the node associated with the best cluster, defined as a T/F traversal of the tree
 target_node_vector = torch.tensor(clusters.iloc[0].key).float()
 
-#generate ~100 molecules from the best cluster
-possible_solutions = []
 
-########################
-#GENERATE NEW MOLECULES#
-########################
+
+#############################
+#GENERATE ~100 NEW MOLECULES#
+#############################
+possible_solutions = []
 while len(possible_solutions) < 100:
     generated_molecules = model.generate_molecules(target_node_vector, batch_size=128, evaluate_after_n_tokens=128, temperature=1, topk=500, topp=0.95)
     possible_solutions += generated_molecules
