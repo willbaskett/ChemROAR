@@ -378,103 +378,11 @@ def make_binary_plot(encodings, levels=8, n_tree_bits = 32):
         c.append(result["count"])
         z.append(result["z"])
         p.append(result["p"])
-    df = pd.DataFrame({"key":k,"depth": l, "mean":s,"ci_l":ci_l, "ci_h":ci_h,  "count":c, "z":z, "p":p})
+    df = pd.DataFrame({"key":k,"Node Depth": l, "Cluster Mean":s,"99% CI Low":ci_l, "99% CI High":ci_h,  "Count":c, "Z":z, "P":p})
     print(df.loc[0])
-    df = df.sort_values("depth").drop_duplicates(subset=["mean", "count", "z"])
-    df = df.sort_values(["z"], ascending=False)
-    df = df[df["count"] >= 10]
-    df["fdr_p"] = st.false_discovery_control(df["p"], method="by")
-    return df
-
-def make_binary_plot_v1(encodings, levels=7, n_tree_bits = 32):
-    X = encodings[encodings.columns[encodings.columns != "label"]]
-    y = encodings["label"]
-    y_is_binary = y.nunique() == 2
-    y_is_categorical = y.nunique() < 25 and not y_is_binary
-    max_val = (2 ** levels)
-    df = pd.DataFrame({"leaf":[], "level":[], "y":[]})
-    for i in range(0,levels+1):
-        max_val_for_level = 2 ** i - 1
-        
-        if i == 0:
-            leaf = max_val/2
-        else:
-            center_val = (max_val - max_val_for_level)/2
-            mult_matrix = 2 ** np.flip(np.arange(i)).reshape(-1,  i).astype(int)
-            leaf = ((np.array(X).astype(int)[:,:i] * mult_matrix).sum(axis=1))
-            offset = max_val / ((2 ** i)*2)
-            leaf = 2*offset*leaf + offset
-        df_part = pd.DataFrame({"leaf":leaf, "level":levels-i, "y":y})
-        df = pd.concat([df, df_part])
-    
-    df["yq"] = y
-    if not y_is_categorical and not y_is_binary:
-        df["yq"] = pd.qcut(df["y"], 10, duplicates="drop")
-    plt.figure(figsize=(20,3))
-    palette = None
-    if not y_is_categorical:
-        palette = "coolwarm"
-    if y_is_binary:
-        palette = "prism"
-    sns.scatterplot(data=df, x="leaf", y="level", hue="yq", alpha=0.1, palette=palette, legend=False).set_title("Plot")
-
-
-    notnan_key = ~y.isna()
-    X = X[notnan_key]
-    y = y[notnan_key]
-
-    
-    if encodings.shape[1] < n_tree_bits:
-        n_tree_bits = encodings.shape[1]
-        
-    data_dict = {}
-    base_data = np.array(X.astype(bool))
-    first_item = y.unique()[0]
-    base_labels = np.array(y).reshape(-1)
-    if y_is_binary:
-        try:
-            base_labels = base_labels.astype(float)
-        except:
-            base_labels = base_labels == first_item
-    
-    for i in range(n_tree_bits):
-        for j in range(len(base_data)):
-            key = tuple(np.array(base_data[j,:i]))
-            if key not in data_dict:
-                data_dict[key] = [base_labels[j]]
-            else:
-                data_dict[key].append(base_labels[j])
-        for key in data_dict:
-            if isinstance(data_dict[key], list):
-                data_dict[key] = {"mean":np.array(data_dict[key]).mean(), "std":np.array(data_dict[key]).std(ddof=1), "count":len(data_dict[key])}
-                b = data_dict[tuple()]
-                d = data_dict[key]
-                z, ci_l, ci_h, p = calculate_tree_p(d["mean"], b["mean"], d["std"], b["std"], d["count"], b["count"], is_binary=y_is_binary)
-                data_dict[key]["ci_l"] = ci_l
-                data_dict[key]["ci_h"] = ci_h
-                data_dict[key]["z"] = z
-                data_dict[key]["p"] = p
-                if len(key) > 0:
-                    if "children" not in data_dict[key[:-1]]:
-                        data_dict[key[:-1]]["children"] = [key]
-                    else:
-                        data_dict[key[:-1]]["children"].append(key)
-        k, l, s, c, ci_l, ci_h, z, p, = [], [], [], [], [], [], [], []
-    
-    for key in data_dict:
-        result = data_dict[key]
-        k.append(np.array(key))
-        l.append(len(key))
-        s.append(result["mean"])
-        ci_l.append(result["ci_l"])
-        ci_h.append(result["ci_h"])
-        c.append(result["count"])
-        z.append(result["z"])
-        p.append(result["p"])
-    df = pd.DataFrame({"key":k,"depth": l, "mean":s,"ci_l":ci_l, "ci_h":ci_h,  "count":c, "z":z, "p":p})
-    print(df.loc[0])
-    df = df.sort_values("depth").drop_duplicates(subset=["mean", "count", "z"])
-    df = df.sort_values(["z"], ascending=False)
-    df = df[df["count"] >= 5]
-    df["fdr_p"] = st.false_discovery_control(df["p"], method="by")
+    df = df.sort_values("Node Depth").drop_duplicates(subset=["Cluster Mean", "Count", "Z"])
+    df = df.sort_values(["Z"], ascending=False)
+    df = df[df["Count"] >= 5]
+    df["FDR Adjusted P"] = st.false_discovery_control(df["P"], method="by")
+    df["Whole Population Mean"] = data_dict[tuple()]["mean"]
     return df
