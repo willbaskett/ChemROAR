@@ -6,9 +6,11 @@ ChemROAR is a transformer-based autoencoder that produces hierarchical binary em
 
 # Architecture Details
 ChemROAR uses a modified position and type aware self-attention operation. This allows it to handle random order modeling of mixed-type data. Each token is represented as a triplet comprising a Type, Position, and Value, which allows multiple data modalities to be incorporated into a single context without necessitating architectural changes or an overly large vocabulary. ChemROAR combines SMILES sequences and with tabular molecular properties in the same self-attention operation during training. The decoder's random order modeling forces ChemROAR to learn to predict molecular properties from SMILES sequences and vice versa. 
+
 ![Chem-ROAR Attention](resources/attention.png)
 
 The encoder produces a hierarchical binary embedding where each additional bit seeks to improve the decoders predictions by as much as possible. This semantically partitions molecules into a binary tree where each bifurcation represents some high-level difference. Nodes in this tree are clusters. Higher-level clusters capture broader, less specific traits and encompass more molecules, whereas lower-level clusters focus on detailed, specific properties but contain fewer molecules. Each cluster is discrete and therefore well defined. There is no uncertainty about how the cluster is defined or which cluster a molecule is in. Each cluster contains a specific number of molecules with specific properties. This enables the use of conventional statistical methods to quantify uncertainty and calculate confidence intervals about any property in each cluster. As ChemROAR can generate new molecules which verifiably belong to any cluster, it can generate molecules with targeted properties by generating new molecules from clusters where those properties are dramatically over-represented. The probability, and its confidence interval, and that a generated molecule will display a desired property can be estimated using the frequency of that property in the cluster used to generate it. 
+
 ![Chem-ROAR Embedding](resources/translation.png)
 
 # Efficient Representation of Molecular Characteristics
