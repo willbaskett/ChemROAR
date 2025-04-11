@@ -1,7 +1,7 @@
 # ChemROAR
 ChemROAR is a novel generative embedding architecture for hierarchically clustering molecules based on semantic similarity and generating new molecules based on those clusters. 
 
-This approach enables the design of molecules with targeted characteristics using minimal data and using a pre-trained model without fine-tuning. It also allows for statistical estimation of the likelihood that generated molecules will exhibit specific desirable properties.
+This approach enables the design of molecules with targeted characteristics with minimal data using a pre-trained model without fine-tuning. It also allows for statistical estimation of the likelihood that generated molecules will exhibit specific desirable properties.
 
 ![Chem-ROAR Generation](resources/targeted_generation.png)
 
