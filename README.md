@@ -3,6 +3,8 @@ ChemROAR is a novel generative embedding architecture for hierarchically cluster
 
 This approach enables the design of molecules with targeted characteristics using minimal data and without additional model retraining. It also allows for statistical estimation of the likelihood that generated molecules will exhibit specific desirable properties.
 
+![Chem-ROAR Generation](resources/targeted_generation.png)
+
 # Description
 ChemROAR is a transformer-based autoencoder that produces hierarchical binary embeddings. This naturally produces hierarchical discrete clusters. It utilizes a Random Order AutoRegressive (ROAR) decoder to learn complex dependencies between SMILES sequences and various molecular properties. The autoregressive decoder allows it to generate new molecules belonging to specific clusters through conditional generation.
 
